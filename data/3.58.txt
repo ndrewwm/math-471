@@ -1,0 +1,31 @@
+company,price
+3M Co,144.41
+American Express Co,94.72
+AT&T Inc,35.31
+Boeing Co,132.41
+Caterpillar Inc,107.28
+Chevron Corp,130.73
+Cisco Systems Inc,24.63
+E.I. Dupont de Nemours and Co,67.55
+ExxonMobil Corp,101.85
+General Electric Co,26.90
+Goldman Sachs Group Inc,169.52
+Home Depot Inc,80.10
+Intel Corp,29.99
+IBM,182.95
+Johnson & Johnson,103.41
+JP Morgan Chase and Co,57.36
+McDonald’s Corp,101.60
+Merck & Co Inc,58.27
+Microsoft Corp,41.45
+Nike Inc,75.43
+Pfizer,29.55
+Procter & Gamble Co,80.28
+The Coca-Cola Co,41.76
+Travelers Companies Inc,95.51
+United Technologies Corp,117.09
+United Health Group Inc,79.88
+Verizon Communications Inc,49.47
+Visa Inc,208.30
+Wal-Mart Stores Inc,76.25
+Walt Disney Co,83.69
