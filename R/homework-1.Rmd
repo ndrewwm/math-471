@@ -1,13 +1,14 @@
 ---
 output: pdf_document
 ---
+
 <!-- 
 Homework 1: Due Sep. 2 (Thursday), 2021
 
 - Read Ch.3
 -->
 
-# Andrew Moore, 8/26/2021
+# Andrew Moore, `r format(Sys.Date(), "%m/%d/%Y")`
 
 ## MATH-471, Homework 1
 
@@ -95,7 +96,7 @@ c. Calculate the sample variance and standard deviation for the experience data.
 The sample variance, $s^2_y$, is the sum of squared deviations from the mean, divided by the sample size (minus 1). There are 8 racers, so our sample size is $n = 8$.
 
 $$
-s^2_y = \frac{1}{n - 1} \Sigma_i (y_i - \bar{y})^2 = \frac{46}{7} \approx 6.57 
+s^2_y = \frac{1}{n - 1} \Sigma_i (y_i - \bar{y})^2 = \frac{46}{7} \approx 6.57
 $$
 
 The sample standard deviation, $s_y$, is the square-root of the variance.
@@ -110,7 +111,7 @@ Having computed both the mean and standard deviation, I would say that the avera
 
 ## 3.30
 
-> To assist in estimating the amount of lumber in a tract of timber, an owner decided to count the number of trees with diameters exceeding 12 inches in randomly selected 50 3 50-foot squares. Seventy 50 3 50 squares were randomly selected from the tract and the number of trees (with diameters in excess of 12 inches) was counted for each. The data are as follows.
+> To assist in estimating the amount of lumber in a tract of timber, an owner decided to count the number of trees with diameters exceeding 12 inches in randomly selected 50 3 50-foot squares. Seventy 50 x 50 squares were randomly selected from the tract and the number of trees (with diameters in excess of 12 inches) was counted for each. The data are as follows.
 
 ```{r}
 timber <- "7 8 6 4 9 11 9 9 9 10 9 8 11 5 8 5 8 8 7 8 3 5 8 7 10 7 8 9 8 11 10 8 9 8 9 9 7 8 13 8 9 6 7 9 9 7 9 5 6 5 6 9 8 8 4 4 7 7 8 9 10 2 7 10 8 10 6 7 7 8"
@@ -169,13 +170,23 @@ sum(between(timber, ybar_plus_3s[1], ybar_plus_3s[2])) / length(timber)
 
 a. From these graphs, determine the median, lower quartile, and upper quartile for the daily costs of both dry and canned dog food.
 
+Visually inspecting the boxplots:
+
+| Measure        | Can   | Dry   |
+| :------------- | ----: | ----: |
+| Median         | 1.60  | 0.5   |
+| Lower Quartile | 1.49  | 0.49  |
+| Upper Quartile | 2.4   | 0.7   |
+
 b. Comment on the similarities and differences in the distributions of daily costs for the two types of dog food.
+
+The two types of dog food appear very different from each other in terms of price. Canned food is both more expensive generally, but also has a much higher level of variability in the level it's sold at. Dry food is consistently cheaper. Both types have a few outliers, but they reflect the overall pattern of each product (i.e., the two expensive outliers are found in canned food, whereas the the inexpensive outlier is found among the dry food).
 
 \newpage
 
 ## 3.44
 
-> The College of Dentistry at the University of Florida has made a commitment to develop its entire curriculum around the use of self-paced instructional materials such as videotapes, slide tapes, and syllabi. It is hoped that each student will proceed at a pace commensurate with his or her ability and that the instructional staff will have more free time for personal consultation in student–faculty interaction. One such instructional module was developed and tested on the first 50 students proceeding through the curriculum. The following measurements represent the number of hours it took these students to complete the required modular material. 
+> The College of Dentistry at the University of Florida has made a commitment to develop its entire curriculum around the use of self-paced instructional materials such as videotapes, slide tapes, and syllabi. It is hoped that each student will proceed at a pace commensurate with his or her ability and that the instructional staff will have more free time for personal consultation in student–faculty interaction. One such instructional module was developed and tested on the first 50 students proceeding through the curriculum. The following measurements represent the number of hours it took these students to complete the required modular material.
 
 ```{r}
 times <- "16 8 33 21 34 17 12 14 27 6 33 25 16 7 15 18 25 29 19 27 5 12 29 22 14 25 21 17 9 4 12 15 13 11 6 9 26 5 16 5 9 11 5 4 5 23 21 10 17 15"
@@ -261,10 +272,9 @@ $$
 where $y_i$ is the closing price for stock $i$ and $C = 0.155625$. Using the stock prices given, compute the DJIA for June 19, 2014.
 
 ```{r}
-const <- 0.155625
-
-sum(nyse$price) / const
+sum(nyse$price) / 0.155625
 ```
 
 c. The DJIA is a summary of data. Does the DJIA provide information about a population using sampled data? If so, to what population? Is the sample a random sample?
 
+The DJIA is a curated performance summary of stocks traded in US stock exchanges. It is not a random sample currently, and was not originally generated or conceived as a random sample of stocks being traded.
