@@ -6,61 +6,90 @@ output: pdf_document
 
 ## MATH-471, Homework 3.1
 
-```{r seed, echo = FALSE}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+```{r init}
 set.seed(20210922)
+
+library(tidyverse)
+library(ggtext)
+
+theme_set(
+  theme_minimal(base_size = 15) +
+    theme(panel.grid.minor = element_blank())
+)
 ```
 
 ### 1. Generate samples of n = 100 for 10 different distributions.
 
-```{r}
+```{r draw samples, echo = TRUE}
+# samples from each distribution stored in a list
 samples <- list(
-  "A. Uniform"     = runif(100, 2, 5), 
-  "B. Binomial"    = rbinom(100, 25, 0.1), 
-  "C. Exponential" = rexp(100, 10), 
-  "D. Gamma"       = rgamma(100, 8, 10), 
-  "E. T"           = rt(100, 25), 
-  "F. F"           = rf(100, 15, 15), 
-  "G. Chisquare"   = rchisq(100, 9), 
-  "H. Weibull"     = rweibull(100, 1, 1.5), 
-  "I. Cauchy"      = rcauchy(100, 0, 1), 
-  "J. Normal"      = rnorm(100, 0, 1)
+  "***A.*** Uniform"     = runif(100, 2, 5), 
+  "***B.*** Binomial"    = rbinom(100, 25, 0.1), 
+  "***C.*** Exponential" = rexp(100, 10), 
+  "***D.*** Gamma"       = rgamma(100, 8, 10), 
+  "***E.*** T"           = rt(100, 25), 
+  "***F.*** F"           = rf(100, 15, 15), 
+  "***G.*** Chi-square"  = rchisq(100, 9), 
+  "***H.*** Weibull"     = rweibull(100, 1, 1.5), 
+  "***I.*** Cauchy"      = rcauchy(100, 0, 1), 
+  "***J.*** Normal"      = rnorm(100, 0, 1)
 )
-```
-
-### 2. Create histograms for each of the 10 distributions, and describe their shapes.
-
-```{r}
-par(mfrow = c(2, 3))
-
-for (i in 1:6) hist(samples[[i]], main = names(samples)[i], xlab = "")
 ```
 
 \newpage
 
-```{r, fig.height = 5.6}
-par(mfrow = c(2, 2))
+### 2. Create histograms or density plots for each of the 10 distributions, and describe their shapes.
 
-for (i in 7:10) hist(samples[[i]], main = names(samples)[i], xlab = "")
+```{r q2, fig.width=10, fig.height=7}
+enframe(samples) %>%
+  unnest(value) %>%
+  ggplot(aes(x = value)) +
+  geom_histogram(aes(y = stat(density)), color = "white", fill = "grey") +
+  geom_density(color = "orange") +
+  # scale_x_continuous(breaks = 1, labels = "0") +
+  facet_wrap(~name, scales = "free") +
+  labs(x = "", y = "") +
+  theme(strip.text = element_markdown())
 ```
+
+- **A.** The shape is generally flat across the range. It is difficult to discern a natural center among the data values.
+- **B.** The data look discrete, and the shape is triangular, with a peak at 2.
+- **C.** The distribution is positively skewed, with a sharp drop-off of data values starting close to 0.1.
+- **D.** The shape appears roughly symmetric, centered at roughly 0.75.
+- **E.** The shape appears roughly symmetric, centered at 0, with a slight negative skew.
+- **F.** The shape is mound-like, centered at 1, with a positive skew.
+- **G.** There is moderate positive skew exhibited in the data; there appear to be very few outliers. It is similar in shape to **F.**
+- **H.** The data are positively skewed, with a sharp drop-off of values starting at 2. It is similar in shape to plot **C.**
+- **I.** The data seem to be centered at 0, but there is an extreme negative outlier within the sample.
+- **J.** The shape is mound-like, symmetric, and centered at 0. It is similar in shape to plot **E.**
+
 
 \newpage
 
 ### 3. Use QQ-plots to determine if the sample comes from a *normal* distribution.
 
-```{r}
-par(mfrow = c(2, 3))
-
-for (i in 1:6) {
-  qqnorm(samples[[i]], main = LETTERS[i])
-  qqline(samples[[i]])
-}
+```{r q3, fig.width=10, fig.height=7}
+enframe(samples) %>%
+  unnest(value) %>%
+  ggplot(aes(sample = value)) +
+  geom_qq_line(lty = "dashed", color = "black") +
+  geom_qq(color = "orange") +
+  facet_wrap(~name, scales = "free") +
+  theme(strip.text = element_markdown()) +
+  labs(x = "", y = "")
 ```
 
-```{r}
-par(mfrow = c(2, 2))
-
-for (i in 7:10) {
-  qqnorm(samples[[i]], main = LETTERS[i])
-  qqline(samples[[i]])
-}
-```
+- **A.**
+- **B.**
+- **C.**
+- **D.**
+- **E.**
+- **F.**
+- **G.**
+- **H.**
+- **I.**
+- **J.**
