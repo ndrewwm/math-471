@@ -23,6 +23,15 @@ theme_set(
   theme_minimal(base_size = 15) +
     theme(panel.grid.minor = element_blank())
 )
+
+# a utility function, to calculate quantiles using Dr. Ko's method demonstrated in class
+qq_df <- function(x) {
+  x <- sort(x)
+  u <- (1:length(x) - 0.5) / length(x)
+  q <- qnorm(u, mean = 0, sd = 1)
+  
+  tibble(x, u, q)
+}
 ```
 
 # Question 1. 
@@ -239,6 +248,8 @@ blocks <- c(.47, .58, .67, .70, .77, .79, .81, .82, .84, .86, .91, .95, .98, 1.0
 a. Use a normal quantile plot to assess whether the data appear to fit a normal distribution. 
 b. Compute the correlation coefficient and p-value for the normal quantile plot. Comment on the degree of fit of the data to a normal distribution.
 
+**a.**
+
 ```{r q494-a}
 b <- tibble(blocks)
 
@@ -246,6 +257,14 @@ ggplot(b, aes(sample = blocks)) +
   geom_qq_line(lty = "dashed", color = "black") +
   geom_qq(color = "orange") +
   labs(x = "Standard Normal", y = "Toughness")
+```
+
+**b.** 
+
+```{r q494-b}
+b <- qq_df(blocks)
+
+with(b, cor.test(x, q))
 ```
 
 \newpage
@@ -270,17 +289,7 @@ c. Determine the sample mean and median with and without the value 448.0 in the 
 
 d. Determine the sample standard deviation and MAD with and without the value 448.0 in the data set.
 
-```{r}
-qq_df <- function(x) {
-  x <- sort(x)
-  u <- (1:length(x) - 0.5) / length(x)
-  q <- qnorm(u, mean = 0, sd = 1)
-  
-  tibble(x, u, q)
-}
-```
-
-
+**a.** Histogram and QQ-plot for the body-mass data (*including* the outlier).
 
 ```{r q4114-a, fig.width=8}
 m <- qq_df(mass)
@@ -293,4 +302,41 @@ q <- ggplot(m, aes(sample = x)) +
   geom_qq(color = "orange")
 
 h + q
+```
+
+**b.** Histogram and QQ-plot for the body-mass data (*excluding* the outlier).
+
+```{r q4114-b, fig.width=8}
+m <- qq_df(mass) %>% filter(x < 448)
+
+h <- ggplot(m, aes(x = x)) +
+  geom_histogram(fill = "grey", color = "white")
+
+q <- ggplot(m, aes(sample = x)) +
+  geom_qq_line(lty = "dashed") +
+  geom_qq(color = "orange")
+
+h + q
+```
+
+**c.** Means and medians, when retaining or excluding the outlier.
+
+```{r q4114-c}
+tibble(
+  w = c("With Outlier", "Without Outlier"),
+  a = c(mean(mass), mean(mass[-33])),
+  m = c(median(mass), median(mass[-33]))
+) %>%
+  kable(col.names = c("", "Mean", "Median"), digits = 2)
+```
+
+**d.** Standard deviations and MADs, when retaining or excluding the outlier.
+
+```{r q4114-d}
+tibble(
+  w = c("With Outlier", "Without Outlier"),
+  s = c(sd(mass), sd(mass[-33])),
+  d = c(mad(mass), mad(mass[-33]))
+) %>%
+  kable(col.names = c("", "SD", "MAD"), digits = 2)
 ```
