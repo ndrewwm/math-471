@@ -7,12 +7,13 @@ output: pdf_document
 ## MATH-471, Homework 3.2
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = "center")
 ```
 
 ```{r init}
 library(tidyverse)
 library(ggtext)
+library(knitr)
 
 theme_set(
   theme_minimal(base_size = 15) +
@@ -26,11 +27,47 @@ Read Ch.4.10 in the textbook and do the following questions from the textbook: p
 
 ## 4.65
 
+Let y be a random variable having a normal distribution with a mean equal to 250 and a standard deviation equal to 50. Find the following probabilities:
+
+a. P(y > 250)
+
+b. P(y > 150)
+
+c. P(150 < y < 350)
+
+d. Find k such that P(250 - k < y < 250 + k) = .60
+
 ## 4.66
+
+Suppose that y is a random variable having a normal distribution with a mean equal to 250 and a standard deviation equal to 10.
+
+a. Show that the event y < 260 has the same probability as z < 1.
+
+b. Convert the event y > 230 to the z-score equivalent.
+
+c. Find P(y < 260) and P(y > 230).
+
+d. Find P(y > 265), P(y < 242), and P(242 < y < 265).
 
 ## 4.70
 
+The College Boards, which are administered each year to many thousands of high school students, are scored so as to yield a mean of 513 and a standard deviation of 130. These scores are close to being normally distributed. What percentage of the scores can be expected to satisfy each of the following conditions?
+
+a. Greater than 600
+
+b. Greater than 700
+
+c. Less than 450
+
+d. Between 450 and 600
+
 ## 4.72
+
+Refer to Exercise 4.70. An honor society wishes to invite those scoring in the top 5% on the College Boards to join their society.
+
+a. What score is required to be invited to join the society?
+
+b. What score separates the top 75% of the population from the bottom 25%? What do we call this value?
 
 # Question 2.
 
@@ -47,9 +84,42 @@ mi <- tibble(
 )
 ```
 
-a. Describe the descriptive statistics about the variable ’Miles driven’. Also describe the shape
-of its distribution.
+a. Describe the descriptive statistics about the variable ’Miles driven’. Also describe the shape of its distribution.
+
 b. Estimate a population distribution of ’Miles driven’ using Q-Q plot.
+
+**a.** Below is a table of descriptive statistics for the sample of cars, and a histogram.
+
+```{r q2-2, fig.width=4, fig.height=4}
+mi %>%
+  summarise(
+    n   = n(),
+    avg = mean(mi),
+    med = median(mi),
+    sd  = sd(mi),
+    p25 = quantile(mi, 1/4),
+    p75 = quantile(mi, 3/4),
+    rng = str_c("[", min(mi), ", ",  max(mi), "]")
+  ) %>%
+  kable(
+    digits = 1,
+    caption = "Descriptive statistics for the sample of cars.",
+    col.names = c("N (# cars)", "Mean", "Median", "SD", "25th Pctile.", "75th Pctile.", "Range")
+  )
+
+ggplot(mi, aes(x = mi)) +
+  geom_histogram(fill = "grey", color = "white") +
+  labs(x = "Miles Driven", y = "Frequency")
+```
+
+**b.** Below is a QQ-plot of the sample of cars.
+
+```{r q2-3, fig.width=4, fig.height=4}
+ggplot(mi, aes(sample = mi)) +
+  geom_qq_line(lty = "dashed", color = "black") +
+  geom_qq(color = "orange") +
+  labs(x = "Standard Normal", y = "Miles Driven")
+```
 
 # Question 3.
 
@@ -58,4 +128,32 @@ pp. 227-229: 4.94 and 4.114.
 
 ## 4.94
 
+The fracture toughness in concrete specimens is a measure of how likely it is that blocks used in new home construction may fail. A construction investigator obtains a random sample of 15 concrete blocks and determines the following toughness values:
+
+```{r q494, echo = TRUE}
+blocks <- c(.47, .58, .67, .70, .77, .79, .81, .82, .84, .86, .91, .95, .98, 1.01, 1.04)
+```
+
+a. Use a normal quantile plot to assess whether the data appear to fit a normal distribution. 
+b. Compute the correlation coefficient and p-value for the normal quantile plot. Comment on the degree of fit of the data to a normal distribution.
+
 ## 4.114
+
+As part of a study to determine factors that may explain differences in animal species relative to their size, the following body masses (in grams) of 50 different bird species were re ported in the paper “Temperature and the Northern Distributions of Wintering Birds,” by Richard Repasky (1991). 
+
+```{r q4114, echo = TRUE}
+mass <- c(
+  7.7, 10.1, 21.6, 8.6, 12.0, 11.4, 16.6, 9.4, 11.5, 9.0, 8.2, 20.2, 48.5, 21.6,
+  26.1, 6.2, 19.1, 21.0, 28.1, 10.6, 31.6, 6.7, 5.0, 68.8, 23.9, 19.8, 20.1, 6.0,
+  99.6, 19.8, 16.5, 9.0, 448.0, 21.3, 17.4, 36.9, 34.0, 41.0, 15.9, 12.5, 10.2,
+  31.0, 21.5, 11.9, 32.5, 9.8, 93.9, 10.9, 19.6, 14.5
+)
+```
+
+a. Does the distribution of the body masses appear to follow a normal distribution? Provide both a graphical and a quantitative assessment.
+
+b. Repeat part (a), with the outlier 448.0 removed.
+
+c. Determine the sample mean and median with and without the value 448.0 in the data set.
+
+d. Determine the sample standard deviation and MAD with and without the value 448.0 in the data set.
