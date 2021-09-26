@@ -83,13 +83,13 @@ enframe(samples) %>%
   labs(x = "", y = "")
 ```
 
-- **A.**
-- **B.**
-- **C.**
-- **D.**
-- **E.**
+- **A.** The data exhibit an "S"-like curvature.
+- **B.** The data increase linearly, but exhibit a step-like pattern, i.e., there are clear breaks visible across the range of (x,y) points. This is atypical for Normal data.
+- **C.** There is clear curvature on the right. This is atypical for Normal data.
+- **D.** The data seem to increase roughly linearly. However, there is some divergence from linearity in the lower-left.
+- **E.** The data seem to increase roughly linearly. However, there is some divergence from linearity in the lower-left.
 - **F.**
 - **G.**
 - **H.**
-- **I.**
+- **I.** Aside from an extreme negative outlier, and some minor .. at the positive end of the data, overall the plot appears to be linear.
 - **J.**
