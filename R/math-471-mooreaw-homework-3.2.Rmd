@@ -1,0 +1,61 @@
+---
+output: pdf_document
+---
+
+# Andrew Moore, `r format(Sys.Date(), "%m/%d/%Y")`
+
+## MATH-471, Homework 3.2
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+```{r init}
+library(tidyverse)
+library(ggtext)
+
+theme_set(
+  theme_minimal(base_size = 15) +
+    theme(panel.grid.minor = element_blank())
+)
+```
+
+# Question 1. 
+
+Read Ch.4.10 in the textbook and do the following questions from the textbook: pp. 222-223: 4.65, 4.66, 4.70, 4.72.
+
+## 4.65
+
+## 4.66
+
+## 4.70
+
+## 4.72
+
+# Question 2.
+
+A consumer testing agency wants to evaluate the claim made by a manufacturer of discount tires. The manufacturer claims that their tires can be driven at least 35,000 miles before wearing out. To determine the average number of miles that can be obtained from the manufacturer’s tires, the agency randomly selects 60 tires from the manufacturer’s warehouse and places the tires on 15 cars driven by test drivers on a 2-mile oval track. The number of miles driven (in thousands of miles) until the tires are determined to be worn out is given in the following table.
+
+| Car | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
+| ---: | -: | -: | -: | -: | -: | -: | -: | -: | -: | --: | --: | --: | --: | --: | --: |
+| Miles driven | 25 | 27 | 35 | 42 | 28 | 37 | 40 | 31 | 29 | 33 | 30 | 26 | 31 | 28 | 30 |
+
+```{r q2-1}
+mi <- tibble(
+  car = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
+  mi  = c(25, 27, 35, 42, 28, 37, 40, 31, 29, 33, 30, 26, 31, 28, 30)
+)
+```
+
+a. Describe the descriptive statistics about the variable ’Miles driven’. Also describe the shape
+of its distribution.
+b. Estimate a population distribution of ’Miles driven’ using Q-Q plot.
+
+# Question 3.
+
+Read Ch.4.14 in the textbook and submit the following questions from the textbook:
+pp. 227-229: 4.94 and 4.114.
+
+## 4.94
+
+## 4.114
