@@ -173,9 +173,10 @@ b. What score separates the top 75% of the population from the bottom 25%? What 
 qnorm(0.95, mean = 513, sd = 130)
 ```
 
-**b.** I'm not sure what exactly this is asking.
+**b.** The difference between the 75th and 25th percentile is known as the inter-quartile range (IQR).
 
 ```{r q472-b, echo = TRUE}
+qnorm(0.75, mean = 513, sd = 130) - qnorm(0.25, mean = 513, sd = 130)
 ```
 
 \newpage
@@ -222,7 +223,9 @@ ggplot(mi, aes(x = mi)) +
   labs(x = "Miles Driven", y = "Frequency")
 ```
 
-**b.** Below is a QQ-plot of the sample of cars.
+There are only 15 data points, and there appears to be a fair amount of variability within the sample. The data do not appear to be symmetric; they exhibit positive skew.
+
+**b.** Below is a QQ-plot of the sample of cars. The departure from linearity in the upper-right is visible, reflecting the long rightward tail in the histogram. A Chi-square distribution or F-distribution seem like possible candidates.
 
 ```{r q2-3}
 ggplot(mi, aes(sample = mi)) +
@@ -248,7 +251,7 @@ blocks <- c(.47, .58, .67, .70, .77, .79, .81, .82, .84, .86, .91, .95, .98, 1.0
 a. Use a normal quantile plot to assess whether the data appear to fit a normal distribution. 
 b. Compute the correlation coefficient and p-value for the normal quantile plot. Comment on the degree of fit of the data to a normal distribution.
 
-**a.**
+**a.** Visually, the relationship looks highly linear, although the total # of data points is small.
 
 ```{r q494-a}
 b <- tibble(blocks)
@@ -259,7 +262,7 @@ ggplot(b, aes(sample = blocks)) +
   labs(x = "Standard Normal", y = "Toughness")
 ```
 
-**b.** 
+**b.** The correlation coefficient is very large; with the associated *p* value indicating an extremely low probability of observing this data if the true correlation was 0. Overall, both graphical and correlational analysis indicate that the toughness of the blocks fits a normal distribution.
 
 ```{r q494-b}
 b <- qq_df(blocks)
@@ -291,32 +294,50 @@ d. Determine the sample standard deviation and MAD with and without the value 44
 
 **a.** Histogram and QQ-plot for the body-mass data (*including* the outlier).
 
-```{r q4114-a, fig.width=8}
+```{r q4114-a-1, fig.width=8}
 m <- qq_df(mass)
 
 h <- ggplot(m, aes(x = x)) +
-  geom_histogram(fill = "grey", color = "white")
+  geom_histogram(fill = "grey", color = "white") +
+  labs(x = "Body Mass (grams)", y = "Frequency")
 
 q <- ggplot(m, aes(sample = x)) +
   geom_qq_line(lty = "dashed") +
-  geom_qq(color = "orange")
+  geom_qq(color = "orange") +
+  labs(x = "Standard Normal", y = "Body Mass (grams)")
 
 h + q
 ```
 
+A very large outlier can be observed in both the histogram and QQ-plot. Although the QQ-plot doesn't appear strictly linear, we can compute the correlation between the observed values and normal-quantiles. The *r* value is positive, but not very strong.
+
+```{r q4114-a-2}
+with(m, cor.test(x, q))
+```
+
 **b.** Histogram and QQ-plot for the body-mass data (*excluding* the outlier).
 
-```{r q4114-b, fig.width=8}
+```{r q4114-b-1, fig.width=8}
 m <- qq_df(mass) %>% filter(x < 448)
 
 h <- ggplot(m, aes(x = x)) +
-  geom_histogram(fill = "grey", color = "white")
+  geom_histogram(fill = "grey", color = "white") +
+  labs(x = "Body Mass (grams)", y = "Frequency")
 
 q <- ggplot(m, aes(sample = x)) +
   geom_qq_line(lty = "dashed") +
-  geom_qq(color = "orange")
+  geom_qq(color = "orange") +
+  labs(x = "Standard Normal", y = "Body Mass (grams)")
 
 h + q
+```
+
+In the absence of the outlier, the shape of the distribution is clearer. There is moderate positive skew, and the QQ-plot shows a non-linear relationship. It is likely that a correlational analysis is inappropriate, but in the spirit of repeating steps from **a.**, we can compute the *r* value for the QQ-plot.
+
+The *r* value is larger than what was seen in **a.**, but it would be misleading to rely on this statistic when considering the graphical results. 
+
+```{r q4114-b-2}
+with(m, cor.test(x, q))
 ```
 
 **c.** Means and medians, when retaining or excluding the outlier.
