@@ -25,18 +25,17 @@ theme_set(
 ### 1. Generate samples of n = 100 for 10 different distributions.
 
 ```{r draw samples, echo = TRUE}
-# samples from each distribution stored in a list
 samples <- list(
-  "***A.*** Uniform"     = runif(100, 2, 5), 
-  "***B.*** Binomial"    = rbinom(100, 25, 0.1), 
-  "***C.*** Exponential" = rexp(100, 10), 
-  "***D.*** Gamma"       = rgamma(100, 8, 10), 
-  "***E.*** T"           = rt(100, 25), 
-  "***F.*** F"           = rf(100, 15, 15), 
-  "***G.*** Chi-square"  = rchisq(100, 9), 
-  "***H.*** Weibull"     = rweibull(100, 1, 1.5), 
-  "***I.*** Cauchy"      = rcauchy(100, 0, 1), 
-  "***J.*** Normal"      = rnorm(100, 0, 1)
+  "***A.***" = runif(100, 2, 5), 
+  "***B.***" = rbinom(100, 25, 0.1), 
+  "***C.***" = rexp(100, 10), 
+  "***D.***" = rgamma(100, 8, 10), 
+  "***E.***" = rt(100, 25), 
+  "***F.***" = rf(100, 15, 15), 
+  "***G.***" = rchisq(100, 9), 
+  "***H.***" = rweibull(100, 1, 1.5), 
+  "***I.***" = rcauchy(100, 0, 1), 
+  "***J.***" = rnorm(100, 0, 1)
 )
 ```
 
@@ -83,13 +82,13 @@ enframe(samples) %>%
   labs(x = "", y = "")
 ```
 
-- **A.** The data exhibit an "S"-like curvature.
-- **B.** The data increase linearly, but exhibit a step-like pattern, i.e., there are clear breaks visible across the range of (x,y) points. This is atypical for Normal data.
-- **C.** There is clear curvature on the right. This is atypical for Normal data.
-- **D.** The data seem to increase roughly linearly. However, there is some divergence from linearity in the lower-left.
-- **E.** The data seem to increase roughly linearly. However, there is some divergence from linearity in the lower-left.
-- **F.**
-- **G.**
-- **H.**
-- **I.** Aside from an extreme negative outlier, and some minor .. at the positive end of the data, overall the plot appears to be linear.
-- **J.**
+- **A.** Uniform
+- **B.** Binomial
+- **C.** Exponential
+- **D.** Gamma
+- **E.** T
+- **F.** F
+- **G.** Chi-Square
+- **H.** Weibull
+- **I.** Cauchy
+- **J.** Normal
