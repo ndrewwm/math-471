@@ -292,7 +292,7 @@ c. Determine the sample mean and median with and without the value 448.0 in the 
 
 d. Determine the sample standard deviation and MAD with and without the value 448.0 in the data set.
 
-**a.** Histogram and QQ-plot for the body-mass data (*including* the outlier).
+**a.** Histogram and QQ-plot for the body-mass data (*including* the outlier). Visually, these data do not appear to come from a normal distribution.
 
 ```{r q4114-a-1, fig.width=8}
 m <- qq_df(mass)
@@ -315,7 +315,7 @@ A very large outlier can be observed in both the histogram and QQ-plot. Although
 with(m, cor.test(x, q))
 ```
 
-**b.** Histogram and QQ-plot for the body-mass data (*excluding* the outlier).
+**b.** Histogram and QQ-plot for the body-mass data (*excluding* the outlier). Even after removing the outlier, the data still seem non-normal.
 
 ```{r q4114-b-1, fig.width=8}
 m <- qq_df(mass) %>% filter(x < 448)
