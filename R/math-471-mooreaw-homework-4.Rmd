@@ -1,0 +1,46 @@
+---
+output: pdf_document
+---
+
+# Andrew Moore, `r format(Sys.Date(), "%m/%d/%Y")`
+
+## MATH-471, Homework 4
+
+The Poisson distribution is a potential candidate for the data that's been collected. We will maximize the likelihood function, which has one parameter of interest, $\lambda$.
+
+$$
+L(x; \lambda) = f(x; \lambda) = \frac{\lambda^xe^{-\lambda}}{x!} \text{ for } x = 0, 1, 2, ... \text{ and } \lambda > 0.
+$$
+Taking the natural log of $L$, we have
+
+$$
+lnL(x; \lambda) = xln(\lambda) - \lambda - ln(x!).
+$$
+
+Differentiating $lnL$ results in 
+
+\begin{align*}
+\frac{\partial}{\partial\lambda} \big[ lnL(x; \lambda) \big] = \frac{\partial}{\partial\lambda}\big[ xln(\lambda) - \lambda - ln(x!) \big] = \frac{x}{\lambda} - 1
+\end{align*}
+
+Setting the equation to 0, we have
+
+\begin{align*}
+0 &= \frac{x}{\lambda} - 1 \\
+1 &= \frac{x}{\lambda} \\
+\lambda &= x
+\end{align*}
+
+We can test whether this point is the global maximum by using the 2nd-derivative test. Taking the second derivative of $lnL$ we have
+
+$$
+\frac{\partial^2}{\partial^2\lambda} \big[ ln(L(x; \lambda)) \big] = \frac{\partial}{\partial\lambda} \big[ \frac{x}{\lambda} - 1 \big] = \frac{-x}{\lambda^2}
+$$
+
+Substituting $\lambda$ in for $x$, we receive
+
+$$
+-\frac{\lambda}{\lambda^2} = -\frac{1}{\lambda}
+$$
+
+This value is negative, and will be negative for all $\lambda$ (because, by definition, $\lambda \geq 0$). This means that we have found the global maximum.
