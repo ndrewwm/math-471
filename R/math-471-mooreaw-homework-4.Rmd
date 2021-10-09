@@ -6,7 +6,13 @@ output: pdf_document
 
 ## MATH-471, Homework 4
 
-The Poisson distribution is a potential candidate for the data that's been collected. We will maximize the likelihood function, which has one parameter of interest, $\lambda$.
+### 1a.
+
+The Poisson distribution is a potential candidate for the data that's been collected.
+
+### 1b.
+
+For the Poisson distribution, both the mean and variance are controlled by the same parameter, $\lambda$. To estimate these quantities, we will maximize the likelihood function, defined as
 
 $$
 L(x; \lambda) = f(x; \lambda) = \frac{\lambda^xe^{-\lambda}}{x!} \text{ for } x = 0, 1, 2, ... \text{ and } \lambda > 0.
@@ -43,4 +49,21 @@ $$
 -\frac{\lambda}{\lambda^2} = -\frac{1}{\lambda}
 $$
 
-This value is negative, and will be negative for all $\lambda$ (because, by definition, $\lambda \geq 0$). This means that we have found the global maximum.
+This value is negative, and will be negative for all $\lambda$ (because, by definition, $\lambda > 0$). This means that we have found the global maximum.
+
+<!-- 2. Read Ch.5.1-5.3 in the textbook and submit the following questions from the textbook:  pp. 285-287: 5.1, 5.5, 5.6, 5.8, 5.10, 5.14, 5.15 -->
+
+\newpage
+### 5.1
+
+### 5.5
+
+### 5.6
+
+### 5.8
+
+### 5.10
+
+### 5.14
+
+### 5.15
