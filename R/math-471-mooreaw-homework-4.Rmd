@@ -8,48 +8,58 @@ output: pdf_document
 
 ### 1a.
 
-The Poisson distribution is a potential candidate for the data that's been collected.
+We have a sample of data \underbar{x} = 6, 4, 8, 4, 4, 4, 2, 5, 5, 7. The sample size is 10.
+
+We are told that the data represent the nightly count of animals caught in Alex's trap. Based on the description, we will assume the data comes from a *Poisson* distribution. The probability mass function for the Poisson distribution is 
+
+$$
+f(x | \lambda) = \frac{\lambda^xe^{-\lambda}}{x!}, \text{ for } x = 0, 1, 2, ... \text{ and } \lambda > 0.
+$$
 
 ### 1b.
 
-For the Poisson distribution, both the mean and variance are controlled by the same parameter, $\lambda$. To estimate these quantities, we will maximize the likelihood function, defined as
+For the Poisson distribution, both the mean and variance are controlled by the same parameter, $\lambda$. To estimate the mean and variance, we will maximize the likelihood function, defined as
 
 $$
-L(x; \lambda) = f(x; \lambda) = \frac{\lambda^xe^{-\lambda}}{x!} \text{ for } x = 0, 1, 2, ... \text{ and } \lambda > 0.
+L(\lambda | x_1, x_2, ..., x_{10}) = \prod_{i = 1}^{10} f(x_i | \lambda) = \prod_{i = 1}^{10} \frac{e^{-\lambda}\lambda^{x_i}}{x_i!}.
 $$
 Taking the natural log of $L$, we have
 
-$$
-lnL(x; \lambda) = xln(\lambda) - \lambda - ln(x!).
-$$
+\begin{align*}
+lnL(\lambda | x_1, x_2, ..., x_{10}) 
+&= \sum_{i = 1}^{10} ln \frac{e^{-\lambda}\lambda^{x_i}}{x_i!} \\
+&= \sum_{i = 1}^{10} \big[ -\lambda + x_i ln\lambda - ln(x_i!) \big] \\
+&= -\sum_{i = 1}^{10} \lambda + \sum_{i = 1}^{10}x_iln\lambda - ln(x_i!) \\
+&= -10\lambda + \sum_{i = 1}^{10}x_iln\lambda - ln(x_i!).
+\end{align*}
 
 Differentiating $lnL$ results in 
 
 \begin{align*}
-\frac{\partial}{\partial\lambda} \big[ lnL(x; \lambda) \big] = \frac{\partial}{\partial\lambda}\big[ xln(\lambda) - \lambda - ln(x!) \big] = \frac{x}{\lambda} - 1
+\frac{\partial}{\partial\lambda} \big[ lnL(\lambda | x_1, x_2, ..., x_{10}) \big] 
+= \frac{\partial}{\partial\lambda} \big[ -10\lambda + \sum_{i = 1}^{10}x_iln\lambda - ln(x_i!) \big]
+= -10 + \frac{\sum_{i = 1}^{10}x_i}{\lambda}.
 \end{align*}
 
-Setting the equation to 0, we have
+Setting the equation to 0, and solving for $\hat{\lambda}$ we have
 
 \begin{align*}
-0 &= \frac{x}{\lambda} - 1 \\
-1 &= \frac{x}{\lambda} \\
-\lambda &= x
+              0 &= -10 + \frac{\sum_{i = 1}^{10}x_i}{\hat{\lambda}} \\
+             10 &= \frac{\sum_{i = 1}^{10}x_i}{\hat{\lambda}} \\
+10\hat{\lambda} &= \sum_{i = 1}^{10}x_i \\
+  \hat{\lambda} &= \frac{\sum_{i = 1}^{10}x_i}{10} \\
+  \hat{\lambda} &= \frac{49}{10} = 4.9.
 \end{align*}
+
+Thus, our estimate for the parameter is $\hat{\lambda} = 4.9$, i.e., $\mu = 4.9$ and $\sigma^2 = 4.9$.
 
 We can test whether this point is the global maximum by using the 2nd-derivative test. Taking the second derivative of $lnL$ we have
 
 $$
-\frac{\partial^2}{\partial^2\lambda} \big[ ln(L(x; \lambda)) \big] = \frac{\partial}{\partial\lambda} \big[ \frac{x}{\lambda} - 1 \big] = \frac{-x}{\lambda^2}
+\frac{\partial^2}{\partial^2\lambda} \big[ ln(L(\lambda | x_1, x_2, ..., x_{10})) \big] = \frac{\partial}{\partial\lambda} \big[ -10 + \frac{\sum_{i = 1}^{10}x_i}{\lambda} \big] = \frac{-\sum_{i = 1}^{10}x_i}{\lambda^2}
 $$
 
-Substituting $\lambda$ in for $x$, we receive
-
-$$
--\frac{\lambda}{\lambda^2} = -\frac{1}{\lambda}
-$$
-
-This value is negative, and will be negative for all $\lambda$ (because, by definition, $\lambda > 0$). This means that we have found the global maximum.
+This result is negative, and will be negative for all $\lambda$ (because, by definition, $\lambda > 0$). This means that we have found the maximum.
 
 <!-- 2. Read Ch.5.1-5.3 in the textbook and submit the following questions from the textbook:  pp. 285-287: 5.1, 5.5, 5.6, 5.8, 5.10, 5.14, 5.15 -->
 
