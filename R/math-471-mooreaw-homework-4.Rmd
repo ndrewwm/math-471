@@ -41,6 +41,14 @@ Differentiating $lnL$ results in
 = -10 + \frac{\sum_{i = 1}^{10}x_i}{\lambda}.
 \end{align*}
 
+We can test whether this point is the global maximum by using the 2nd-derivative test. Taking the second derivative of $lnL$ we have
+
+$$
+\frac{\partial^2}{\partial^2\lambda} \big[ ln(L(\lambda | x_1, x_2, ..., x_{10})) \big] = \frac{\partial}{\partial\lambda} \big[ -10 + \frac{\sum_{i = 1}^{10}x_i}{\lambda} \big] = \frac{-\sum_{i = 1}^{10}x_i}{\lambda^2}
+$$
+
+This result is negative, and will be negative for all $\lambda$ (because, by definition, $\lambda > 0$). This means that we have found the maximum.
+
 Setting the equation to 0, and solving for $\hat{\lambda}$ we have
 
 \begin{align*}
@@ -53,14 +61,6 @@ Setting the equation to 0, and solving for $\hat{\lambda}$ we have
 
 Thus, our estimate for the parameter is $\hat{\lambda} = 4.9$, i.e., $\mu = 4.9$ and $\sigma^2 = 4.9$.
 
-We can test whether this point is the global maximum by using the 2nd-derivative test. Taking the second derivative of $lnL$ we have
-
-$$
-\frac{\partial^2}{\partial^2\lambda} \big[ ln(L(\lambda | x_1, x_2, ..., x_{10})) \big] = \frac{\partial}{\partial\lambda} \big[ -10 + \frac{\sum_{i = 1}^{10}x_i}{\lambda} \big] = \frac{-\sum_{i = 1}^{10}x_i}{\lambda^2}
-$$
-
-This result is negative, and will be negative for all $\lambda$ (because, by definition, $\lambda > 0$). This means that we have found the maximum.
-
 <!-- 2. Read Ch.5.1-5.3 in the textbook and submit the following questions from the textbook:  pp. 285-287: 5.1, 5.5, 5.6, 5.8, 5.10, 5.14, 5.15 -->
 
 \newpage
@@ -70,19 +70,36 @@ The county government in a city that is dominated by a large state university is
 
 **a.** Identify the populations of interest to the county officials.
 
-
+Full-time students versus non-students.
 
 **b.** How might you select a sample of voters to gather this information?
 
+The county government could request lists of students who were enrolled full-time over the past 5 years. It could then compile lists of all residents recorded as living in the county over the past 5 years. After removing duplicates from each list, the county could then compare its list of county-residents against the list of students. Once the students had been removed from the list of county residents, the government would have their two populations available for sampling. They could then draw a random sample of an appropriate size from each.
+
 ### 5.5
 
-A company that manufacturers coffee for use in commercial machines monitors the caf feine content in its coffee. The company selects 50 samples of coffee every hour from its production line and determines the caffeine content. From historical data, the caffeine content (in milligrams, mg) is known to have a normal distribution with $\hat{\sigma}$ = 7.1 mg. During a 1-hour time period, the 50 samples yielded a mean caffeine content of $\bar{y}$ = 110 mg.
+A company that manufacturers coffee for use in commercial machines monitors the caffeine content in its coffee. The company selects 50 samples of coffee every hour from its production line and determines the caffeine content. From historical data, the caffeine content (in milligrams, mg) is known to have a normal distribution with $\hat{\sigma}$ = 7.1 mg. During a 1-hour time period, the 50 samples yielded a mean caffeine content of $\bar{y}$ = 110 mg.
 
 **a.** Identify the population about which inferences can be made from the sample data.
 
+The population is the universe of possible n = 50 samples drawn from the production line.
+
 **b.** Calculate a 95% confidence interval for the mean caffeine content $\mu$ of the coffee produced during the hour in which the 50 samples were selected.
 
+```{r}
+n <- 50
+s <- 7.1
+ybar <- 110
+
+# Margin of Error at 95% confidence
+moe <- 1.96 * s / sqrt(n)
+
+(ci <- ybar + c(c(-1, 1) * moe))
+```
+
 **c.** Explain to the CEO of the company in nonstatistical language the interpretation of the constructed confidence interval.
+
+Based on the sample collected, we would estimate that the average level of caffeine is between `r round(ci[1], 2)` and `r round(ci[2], 2)`. If we repeated this experiment 100 times, and computed an interval for each in the same fashion, approx. 95 of the intervals would contain the true average. 
 
 ### 5.6
 
@@ -90,15 +107,35 @@ Refer to Exercise 5.5. The engineer in charge of the coffee manufacturing proces
 
 **a.** What would happen to the width of the confidence intervals if the level of confidence of each interval is increased from 95% to 99%?
 
+The interval width would increase.
+
 **b.** What would happen to the width of the confidence intervals if the number of samples per hour was increased from 50 to 100?
+
+The interval width would decrease.
 
 ### 5.8
 
-As part of the recruitment of new businesses, the city’s economic development department wants to estimate the gross profit margin of small businesses (under $1 million in sales) currently residing in the city. A random sample of the previous years annual reports of 15 small businesses shows the mean net profit margin to be 7.2% (of sales) with a standard deviation of 12.5%.
+As part of the recruitment of new businesses, the city's economic development department wants to estimate the gross profit margin of small businesses (under $1 million in sales) currently residing in the city. A random sample of the previous years annual reports of 15 small businesses shows the mean net profit margin to be 7.2% (of sales) with a standard deviation of 12.5%.
 
 **a.** Construct a 99% confidence interval for the mean gross profit margin of $\mu$ of all small businesses in the city.
 
-**b.** The city manager reads the report and states that the confidence interval for $\mu$ constructed in part (a) is not valid because the data are obviously not normally distributed and thus the sample size is too small. Based on just knowing the mean and standard deviation of the sample of 15 businesses, do you think the city man ager is valid in his conclusion about the data? Explain your answer.
+We are asked to compute a 99% confidence interval for the sample of 15 businesses, but are not given indication as to what distribution the data should be modeled by. This means that the Central Limit Theorem for the sample mean does not apply.
+
+For the sake of the exercise, we will assume the data does come from a normal distribution, and use a T distribution as the distribution for our pivot.
+
+```{r}
+n <- 15
+s <- 0.125
+ybar <- 0.072
+
+tval <- qt(1 - 0.01 / 2, n - 1)
+
+(ci <- ybar + c(c(-1, 1) * (tval * s / sqrt(n)))) * 100
+```
+
+**b.** The city manager reads the report and states that the confidence interval for $\mu$ constructed in part (a) is not valid because the data are obviously not normally distributed and thus the sample size is too small. Based on just knowing the mean and standard deviation of the sample of 15 businesses, do you think the city manager is valid in his conclusion about the data? Explain your answer.
+
+I would agree with the city manager, and would recommend a sample size of at least 30 businesses if we we want to rely on the Central Limit Theorem.
 
 ### 5.10
 
@@ -106,11 +143,33 @@ The susceptibility of the root stocks of a variety of orange tree to a specific 
 
 **a.** Use the sample information to construct a 90% confidence interval on the mean of the logarithm of the larvae counts.
 
+```{r}
+n <- 40
+s <- 1.12
+ybar <- 9.02
+zval <- -qnorm((1 - 0.9) / 2)
+
+(ci <- ybar + c(c(-1, 1) * (zval * s / sqrt(n))))
+```
+
 **b.** Identify the population for which this confidence interval could be used to assess the susceptibility of the orange trees to the larva.
+
+This could be used to assess a Normal/LogNormal distribution.
 
 ### 5.14
 
-The housing department in a large city monitors the rent for rent-controlled apartments in the city. The mayor wants an estimate of the average rent. The housing department must deter mine the number of apartments to include in a survey in order to be able to estimate the average rent to within \$100 using a 95% confidence interval. From past surveys, the monthly charge for rent-controlled apartments ranged from \$1,000 to \$3,500. How many renters must be included in the survey to meet the requirements?
+The housing department in a large city monitors the rent for rent-controlled apartments in the city. The mayor wants an estimate of the average rent. The housing department must determine the number of apartments to include in a survey in order to be able to estimate the average rent to within \$100 using a 95% confidence interval. From past surveys, the monthly charge for rent-controlled apartments ranged from \$1,000 to \$3,500. How many renters must be included in the survey to meet the requirements?
+
+```{r}
+s <- (3500 - 1000) / 4
+moe <- 100
+zval <- 1.96
+
+# calculating N
+zval^2 * s^2 / moe^2
+```
+
+150 renters should be included in the survey.
 
 ### 5.15
 
@@ -118,4 +177,17 @@ Refer to Exercise 5.14. Suppose the mayor's staff reviews the proposed survey an
 
 **a.** If the level of confidence is increased to 99% with the average rent estimated within $50, how many apartments need to be included in the survey?
 
+```{r}
+s <- (3500 - 1000) / 4
+moe <- 50
+zval <- 2.575
+
+# calculating N
+zval^2 * s^2 / moe^2
+```
+
+1036 renters should be included.
+
 **b.** Suppose the budget for the survey will not support increasing the level of confidence to 99%. Provide an explanation to the mayor, who has never taken a statistics course, of the impact on the accuracy of the estimate of the average rent of not raising the level of confidence from 95% to 99%.
+
+Increasing the level of confidence to 99% requires a sample size 10 times as large as that required for 95%, which is unfeasible based on the project budget. However, even if the resources were available, a 95% confidence level should provide an adequate level of accuracy. If we were to repeat our data collection and estimation procedures 100 times, 95 of the collections/estimations would provide an interval that contains the true average.
