@@ -3,11 +3,15 @@ output: pdf_document
 ---
 
 ```{r opts, include = FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+  warning = FALSE, message = FALSE, echo = FALSE,
+  fig.align = "center", fig.width = 4, fig.height = 4
+)
 ```
 
 ```{r init, echo = FALSE}
 library(tidyverse)
+library(patchwork)
 library(knitr)
 
 theme_set(
@@ -30,7 +34,7 @@ A study is designed to test the hypotheses $H_0: \mu \geq 26$ versus $H_a: \mu <
 
 We have a sample of 50 units. We will compute the test statistic, $TS = \frac{\bar{y} - \mu_0}{s / \sqrt{n}}$. Using the t-distribution to calculate the p-value, we have:
 
-```{r}
+```{r, echo = TRUE}
 n  <- 50
 s  <- 7.6
 y  <- 25.9
@@ -87,6 +91,8 @@ Provide the rejection region based on a t-test statistic for the following situa
 
 ### 5.36
 
+The ability to read rapidly and simultaneously maintain a high level of comprehension is often a determining factor in the academic success of many high school students. A school district is considering a supplemental reading program for incoming freshmen. Prior to implementing the program, the school runs a pilot program on a random sample of $n = 20$ students. The students were thoroughly tested to determine reading speed and reading comprehension. Based on a fixed-length standardized test reading passage, the following reading times (in minutes) and comprehension scores (based on a 100-point scale) were recorded.
+
 ```{r, echo = FALSE}
 q536 <- tibble(
   student = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20),
@@ -94,8 +100,6 @@ q536 <- tibble(
   comprehension = c(60, 76, 76, 90, 81, 75, 95, 98, 88, 73, 90, 66, 91, 83, 100, 85, 76, 69, 91, 78)
 )
 ```
-
-The ability to read rapidly and simultaneously maintain a high level of comprehension is often a determining factor in the academic success of many high school students. A school district is considering a supplemental reading program for incoming freshmen. Prior to implementing the program, the school runs a pilot program on a random sample of $n = 20$ students. The students were thoroughly tested to determine reading speed and reading comprehension. Based on a fixed-length standardized test reading passage, the following reading times (in minutes) and comprehension scores (based on a 100-point scale) were recorded.
 
 ```{r, echo = FALSE}
 q536_ss <- q536 %>%
@@ -108,18 +112,56 @@ head(q536) %>% kable()
 kable(q536_ss)
 ```
 
-
 **a.** What is the population about which inferences are being made?
 
-**b.** Place a 95% confidence interval on the mean reading time for all incoming freshmen in the district. 
+Incoming freshmen at the school district.
+
+**b.** Place a 95% confidence interval on the mean reading time for all incoming freshmen in the district.
+
+```{r, echo = TRUE}
+y <- mean(q536$reading_time)
+s <- sd(q536$reading_time)
+n <- nrow(q536)
+a <- 0.05
+
+tval <- qt(1 - a/2, n - 1)
+
+moe <- tval * s / sqrt(n)
+
+(ci <- y + (c(-1, 1) * moe))
+```
 
 **c.** Plot the reading time using a normal probability plot or boxplot. Do the data appear to be a random sample from a population having a normal distribution?
 
+```{r}
+ggplot(q536, aes(sample = reading_time)) +
+  geom_qq_line(lty = "dashed") +
+  geom_qq(color = "orange")
+```
+
 **d.** Provide an interpretation of the interval estimate in part (b).
+
+TODO
 
 ### 5.37
 
-Refer to Exercise 5.36. Using the reading comprehension data, is there significant evidence that the reading program would produce for incoming freshmen a mean comprehension score greater than 80, the statewide average for comparable students during the previous year? Determine the level of significance for your test. Interpret your findings. 
+Refer to Exercise 5.36. Using the reading comprehension data, is there significant evidence that the reading program would produce for incoming freshmen a mean comprehension score greater than 80, the statewide average for comparable students during the previous year? Determine the level of significance for your test. Interpret your findings.
+
+```{r, echo = TRUE}
+print(
+  q537 <- q536 %>%
+    summarise(
+      n  = n(),
+      y  = mean(comprehension),
+      s  = sd(comprehension),
+      ts = (y - 80) / (s / sqrt(n))
+    )
+ )
+
+pt(q537$ts, q537$n - 1, lower.tail = FALSE)
+```
+
+TODO, double-check math
 
 ### 5.39
 
