@@ -5,7 +5,7 @@ output: pdf_document
 ```{r opts, include = FALSE}
 knitr::opts_chunk$set(
   warning = FALSE, message = FALSE, echo = FALSE,
-  fig.align = "center", fig.width = 4, fig.height = 4
+  fig.align = "center", fig.width = 5, fig.height = 4
 )
 ```
 
@@ -47,36 +47,145 @@ ts <- (y - m0) / (s / sqrt(n))
 
 The p-value, `r round(p, 3)`, is larger than our $\alpha$. This means we fail to reject $H_0$, and cannot conclude that the population mean is less than 26.
 
+\newpage
 ### 5.18
 
 Refer to Exercise 5.16. Graph the power curve for rejecting $H_0: \mu < 26$ for the following values of $\mu$: 20, 21, 22, 23, 24, 25, and 26.
 
+```{r q518}
+pwr <- function(n, s, m0, m1, a, one_tail = TRUE) {
+  if (one_tail) z_a <- qnorm(1 - a) else z_a <- qnorm(1 - a/2)
+  
+  ts <- abs(m1 - m0) / (s / sqrt(n))
+  
+  1 - pnorm(z_a - ts)
+}
+
+n  <- 50
+s  <- 7.6
+m0 <- 26
+m1 <- 20:26
+a  <- 0.05
+
+q518 <- tibble(x = m1, y = pwr(n, s, m0, m1, a))
+
+ggplot(q518, aes(x = x, y = y)) +
+  geom_line(color = "orange") +
+  geom_point(color = "orange") +
+  scale_y_continuous(breaks = seq(0, 1, .2)) +
+  labs(x = expression(mu), y = expression(1 - beta))
+```
+
 **a.** Describe the change in the power as the value of $\mu$ decreases from $\mu_0 = 26$.
+
+Power increases dramatically between $\mu = 25$ to $\mu = 23$, reaching over 90%+ when $\mu \leq 22$.
 
 **b.** Suppose the value of $n$ remains at 50 but $\alpha$ is decreased to $\alpha = .01$. Without recalculating the values of the power, superimpose on the graph for $\alpha = .05$ and $n = 50$ the power curve for $\alpha = .01$ and $n = 50$.
 
+```{r q518b}
+q518b <- bind_rows(
+  "0.05" = q518,
+  "0.01" = tibble(x = m1, y = pwr(n, s, m0, m1, 0.01)),
+  .id = "alpha"
+)
+
+ggplot(q518b, aes(x = x, y = y, color = alpha)) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(name = expression(alpha), values = c("grey", "orange")) +
+  scale_y_continuous(breaks = seq(0, 1, .2)) +
+  labs(x = expression(mu), y = expression(1 - beta)) +
+  theme(legend.position = "top")
+```
+
 **c.** Suppose the value of $n$ is decreased to 35 but $\alpha$ is kept at $\alpha = .05$. Without recalculating the values of the power, superimpose on the graph for $\alpha = .05$ and $n = 50$ the power curve for $\alpha = .05$ and $n = 35$.
 
+```{r q518c}
+q518c <- bind_rows(
+  "50" = q518,
+  "35" = tibble(x = m1, y = pwr(35, s, m0, m1, a)),
+  .id = "n"
+)
+
+ggplot(q518c, aes(x = x, y = y, color = n)) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(name = "N", values = c("grey", "orange")) +
+  scale_y_continuous(breaks = seq(0, 1, .2)) +
+  labs(x = expression(mu), y = expression(1 - beta)) +
+  theme(legend.position = "top")
+```
+
+\newpage
 ### 5.21
 
 A study was conducted of 90 adult male patients following a new treatment for congestive heart failure. One of the variables measured on the patients was the increase in exercise capacity (in minutes) over a 4-week treatment period. The previous treatment regime had produced an average increase of $\mu = 2$ minutes. The researchers wanted to evaluate whether the new treatment had increased the value of $\mu$ in comparison to the previous treatment. The data yielded $\bar{y} = 2.17$ and $s = 1.05$.
 
 **a.** Using $\alpha = .05$, what conclusions can you draw about the research hypothesis?
 
+```{r q521}
+a  <- 0.05
+n  <- 90
+s  <- 1.05
+m1 <- 2.17
+m0 <- 2
+ts <- (m1 - m0) / (s / sqrt(n))
+p  <- 1 - pnorm(ts)
+```
+
+Based on the study information, we should conduct a one-tailed hypothesis test. Our null hypothesis is $H_0: \mu \leq 2$, and our alternative hypothesis is $H_1: \mu > 2$. Given that the sample size is large (n = 90), we can apply the central limit theorem when considering the distribution of the mean. Computing the test statistic, we receive `r round(ts, 3)`, which is associated with a *p* value of `r round(p, 3)` (larger than our $\alpha$ of 0.05). Based on these results, we do not have sufficient evidence to reject $H_0$, and cannot conclude that the new treatment regime results in an improvement compared to the existing treatment. 
+
+\newpage
 ### 5.28
 
 The R&D department of a paint company has developed an additive that it hopes will in crease the ability of the company's stain for outdoor decks to resist water absorption. The current formulation of the stain has a mean absorption rate of 35 units. Before changing the stain, a study was designed to evaluate whether the mean absorption rate of the stain with the additive was decreased from the current rate of 35 units. The stain with the additive was applied to 50 pieces of decking material. The resulting data were summarized to $\bar{y} = 33.6$ and $s = 9.2$
 
 **a.** Is there substantial evidence $(\alpha =  .01)$ that the additive reduces the mean absorption from its current value?
 
+```{r q528a}
+a  <- 0.01
+n  <- 50
+s  <- 9.2
+m1 <- 33.6
+m0 <- 35
+ts <- (m1 - m0) / (s / sqrt(n))
+p  <- pnorm(ts)
+```
+
+Based on the study information, we should conduct a one-tailed hypothesis test. Our null hypothesis is $H_0: \mu \geq$ `r m0`, and our alternative hypothesis is $H_1: \mu <$ `r m0`. Given that the sample size is large (n = `r n`), we can apply the central limit theorem when considering the distribution of the mean. Computing the test statistic, we receive `r round(ts, 3)`, which is associated with a *p* value of `r round(p, 3)` (larger than our $\alpha$ of `r a`). Alternatively, we can examine the Z-value for our alpha level: `r round(qnorm(0.01), 3)`. Our computed test-statistic is not as extreme as our threshold. Based on these results, we do not have sufficient evidence to reject $H_0$, and cannot conclude that the additive decreases the absorption rate.
+
 **b.** What is the level of significance (p-value) of your test results?
+
+The significance level is `r round(p, 3)`.
 
 **d.** Estimate the mean absorption using a 99% confidence interval. Is the confidence interval consistent with your conclusions from the test of hypotheses?
 
+```{r q528d}
+moe <- qnorm(1 - a/2) * s / sqrt(n)
+ci <- m1 + (c(-1, 1) * moe)
+ci_fmt <- str_c("[", round(ci, 2)[1], ", ", round(ci, 2)[2], "]")
+```
+
+A 99% confidence interval for the sample mean is `r ci_fmt`. The confidence interval is consistent with our hypothesis test. Specifically, the interval contains the value of $\mu_0$, 35.
+
+\newpage
 ### 5.32
 
 A tobacco company advertises that the average nicotine content of its cigarettes is at most 14 milligrams. A consumer protection agency wants to determine whether the average nicotine content is in fact greater than 14. A random sample of 300 cigarettes of the company's brand yields an average nicotine content of 14.6 milligrams and a standard deviation of 3.8 milligrams. Determine the level of significance of the statistical test of the agency's claim that $\mu$ is greater than 14. If $\alpha = .01$, is there significant evidence that the agency's claim has been supported by the data?
 
+```{r q532}
+a  <- 0.01
+n  <- 300
+s  <- 3.8
+m1 <- 14.6
+m0 <- 14
+ts <- (m1 - m0) / (s / sqrt(n))
+p  <- 1 - pnorm(ts)
+```
+
+Based on the study information, we should conduct a one-tailed hypothesis test. Our null hypothesis is $H_0: \mu \leq$ `r m0`, and our alternative hypothesis is $H_1: \mu >$ `r m0`. Given that the sample size is large (n = `r n`), we can apply the central limit theorem when considering the distribution of the mean. Computing the test statistic, we receive `r round(ts, 3)`, which is associated with a *p* value of `r round(p, 3)` (smaller than our $\alpha$ of `r a`). Alternatively, we can examine the Z-value for our alpha level: `r round(qnorm(0.99), 3)`. Our computed test-statistic is more extreme than our threshold (i.e., it is larger). Based on these results, we have sufficient evidence to reject $H_0$, concluding that the hypothesis that $\mu \leq 14$ is inconsistent with the collected data.
+
+\newpage
 ### 5.34
 
 Provide the rejection region based on a t-test statistic for the following situations: 
@@ -89,6 +198,7 @@ Provide the rejection region based on a t-test statistic for the following situa
 
 **d.** $H_0: \mu = 28$ versus $H_a: \mu \neq 28$ with $n = 13$, $\alpha = .01$
 
+\newpage
 ### 5.36
 
 The ability to read rapidly and simultaneously maintain a high level of comprehension is often a determining factor in the academic success of many high school students. A school district is considering a supplemental reading program for incoming freshmen. Prior to implementing the program, the school runs a pilot program on a random sample of $n = 20$ students. The students were thoroughly tested to determine reading speed and reading comprehension. Based on a fixed-length standardized test reading passage, the following reading times (in minutes) and comprehension scores (based on a 100-point scale) were recorded.
@@ -143,6 +253,7 @@ ggplot(q536, aes(sample = reading_time)) +
 
 TODO
 
+\newpage
 ### 5.37
 
 Refer to Exercise 5.36. Using the reading comprehension data, is there significant evidence that the reading program would produce for incoming freshmen a mean comprehension score greater than 80, the statewide average for comparable students during the previous year? Determine the level of significance for your test. Interpret your findings.
@@ -163,6 +274,7 @@ pt(q537$ts, q537$n - 1, lower.tail = FALSE)
 
 TODO, double-check math
 
+\newpage
 ### 5.39
 
 A consumer testing agency wants to evaluate the claim made by a manufacturer of discount tires. The manufacturer claims that its tires can be driven at least 35,000 miles before wearing out. To determine the average number of miles that can be obtained from the manufacturer's tires, the agency randomly selects 60 tires from the manufacturer's warehouse and places the tires on 15 cars driven by test drivers on a 2-mile oval track. The number of miles driven (in thousands of miles) until the tires are determined to be worn out is given in the following table.
@@ -178,6 +290,7 @@ q539 <- tibble(
 
 **b.** Is there significant evidence ($\alpha = .01$) that the manufacturer's claim is false? What is the level of significance of your test? Interpret your findings.
 
+\newpage
 ### 5.42
 
 A dealer in recycled paper places empty trailers at various sites. The trailers are gradually filled by individuals who bring in old newspapers and magazines and are picked up on several schedules. One such schedule involves pickup every second week. This schedule is desirable if the average amount of recycled paper is more than 1,600 cubic feet per 2-week period. The dealer's records for 18 2-week periods show the following volumes (in cubic feet) at a particular site:
