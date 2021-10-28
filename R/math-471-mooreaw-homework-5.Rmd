@@ -34,9 +34,7 @@ A study is designed to test the hypotheses $H_0: \mu \geq 26$ versus $H_a: \mu <
 
 **a.**  With $\alpha = .05$, is there substantial evidence that the population mean is less than 26?
 
-We have a sample of 50 units. We will compute the test statistic, $TS = \frac{\bar{y} - \mu_0}{s / \sqrt{n}}$. Using the t-distribution to calculate the p-value, we have:
-
-```{r, echo = TRUE}
+```{r}
 n  <- 50
 s  <- 7.6
 y  <- 25.9
@@ -44,10 +42,10 @@ m0 <- 26
 ts <- (y - m0) / (s / sqrt(n))
 
 # probability of seeing this or a more extreme (smaller) value, if h0 is true
-(p <- pt(ts, n - 1))
+p <- pnorm(ts)
 ```
 
-The p-value, `r round(p, 3)`, is larger than our $\alpha$. This means we fail to reject $H_0$, and cannot conclude that the population mean is less than 26.
+Based on the study information, we are conducting a one-tailed hypothesis test. The alternative and null hypotheses are stated above. Given that the sample size is large (n = 50), we can apply the central limit theorem when considering the distribution of the mean. Computing the test statistic, we receive `r round(ts, 3)`, which is associated with a *p* value of `r round(p, 3)` (substantially larger than our $\alpha$ of 0.05). Based on these results, we do not have sufficient evidence to reject $H_0$, and cannot conclude that the population mean $\mu$ is less than 26.
 
 \newpage
 ### 5.18
