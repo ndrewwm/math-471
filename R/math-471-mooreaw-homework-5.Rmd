@@ -208,7 +208,45 @@ Provide the rejection region based on a t-test statistic for the following situa
 
 - **d.** $H_0: \mu = 28$ versus $H_a: \mu \neq 28$ with $n = 13$, $\alpha = .01$
 
---- 
+---
+
+The shaded area of each plot denote the rejection regions.
+
+```{r, fig.width=6, fig.height=6.5}
+q534 <- tibble(
+  `a` = qt(0.05, 11 - 1),
+  `b` = qt(0.025, 21 - 1, lower.tail = FALSE),
+  `c` = qt(0.001, 8 - 1),
+  `d` = qt(1 - 0.01/2, 13 - 1)
+)
+
+p_a <- ggplot(tibble(x = c(-5, 5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 10)) +
+  stat_function(fun = dt, xlim = c(-5, q534$a), geom = "area", args = lst(df = 10)) +
+  labs(x = "t", y = "", title = "a. t < -1.81") +
+  theme(axis.text.y = element_blank())
+
+p_b <- ggplot(tibble(x = c(-5, 5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 20)) +
+  stat_function(fun = dt, xlim = c(q534$b, 5), geom = "area", args = lst(df = 20)) +
+  labs(x = "t", y = "", title = "b. t > 2.09") +
+  theme(axis.text.y = element_blank())
+
+p_c <- ggplot(tibble(x = c(-5, -3)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 7)) +
+  stat_function(fun = dt, xlim = c(-7, q534$c), geom = "area", args = lst(df = 7)) +
+  labs(x = "t", y = "", title = "c. t < -4.79") +
+  theme(axis.text.y = element_blank())
+
+p_d <- ggplot(tibble(x = c(-5, 5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 12)) +
+  stat_function(fun = dt, xlim = c(-5, -q534$d), geom = "area", args = lst(df = 12)) +
+  stat_function(fun = dt, xlim = c(q534$d, 5), geom = "area", args = lst(df = 12)) +
+  labs(x = "t", y = "", title = "d. t < -3.05 or t > 3.05") +
+  theme(axis.text.y = element_blank())
+
+(p_a + p_b) / (p_c + p_d)
+```
 
 \newpage
 ### 5.36
@@ -239,7 +277,7 @@ Incoming freshmen at the school district.
 
 **b.** Place a 95% confidence interval on the mean reading time for all incoming freshmen in the district.
 
-```{r, echo = TRUE}
+```{r}
 y <- mean(q536$reading_time)
 s <- sd(q536$reading_time)
 n <- nrow(q536)
@@ -273,21 +311,24 @@ Refer to Exercise 5.36. Using the reading comprehension data, is there significa
 
 ---
 
-```{r, echo = TRUE}
-print(
-  q537 <- q536 %>%
-    summarise(
-      n  = n(),
-      y  = mean(comprehension),
-      s  = sd(comprehension),
-      ts = (y - 80) / (s / sqrt(n))
-    )
- )
+```{r}
+q537 <- q536 %>%
+  summarise(
+    n  = n(),
+    y  = mean(comprehension),
+    s  = sd(comprehension),
+    ts = (y - 80) / (s / sqrt(n)),
+    p  = pt(ts, n - 1)
+  )
 
-pt(q537$ts, q537$n - 1, lower.tail = FALSE)
+ggplot(q536, aes(sample = comprehension)) +
+  geom_qq_line(lty = "dashed") +
+  geom_qq(color = "orange")
 ```
 
-TODO, double-check math
+Examining the comprehension data, we have a generally linear relationship observed in the QQ-plot. This question can be answered using a one-tailed hypothesis test ($H_0: \mu \leq 80$ vs. $H_1: \mu > 80$). Given that our sample-size is below 30, and given that our data appear to come from a normal distribution, we will rely on the T-distribution for our test statistic.
+
+Computing the test statistic, we receive `r round(q537$ts, 3)`, which is associated with a *p* value (significance level) of `r round(q537$p, 3)`. This indicates we cannot reject $H_0$. Our observed data is consistent with a $\mu \leq 80$.
 
 \newpage
 ### 5.39
