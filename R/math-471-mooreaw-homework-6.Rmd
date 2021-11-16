@@ -64,6 +64,7 @@ p_c <- ggplot(tibble(x = c(-3.5, 3.5)), aes(x)) +
 p_a / p_b / p_c
 ```
 
+<!-- done -->
 \newpage
 ### 6.3
 
@@ -97,8 +98,20 @@ k <- sqrt(s1) / n1 / (sqrt(s1) / n1 + sqrt(s2) / n2)
 ts <- (m1 - m2 - d0) / sqrt(s1 / n1 + s2 / n2)
 df <- (n1 - 1) * (n2 - 1) / ((1 - k)^2 * (n1 - 1) + k^2 * (n2 - 1))
 
+crit <- qt(0.01, df)
 ```
 
+```{r, eval = FALSE}
+pop1 <- rnorm(n1, m1, s1)
+pop2 <- rnorm(n2, m2, s2)
+
+t.test(pop1, pop2, alternative = "less", mu = 2.3, conf.level = 0.99)
+t.test(pop1, pop2, mu = 2.3, conf.level = 0.99)
+```
+
+We will assume the samples are normally distributed. At an alpha level of 0.01, for a one-sided test for $\mu_1 - \mu_2 > 2.3$, the critical value is `r round(crit, 3)`. Our observed test statistic based on the summary values is `r round(ts, 3)`. This t-value is below our critical value, indicating we should reject the null hypothesis.
+
+<!-- done -->
 ### 6.4
 
 Refer to Exercise 6.3.
@@ -107,6 +120,19 @@ a) What is the level of significance for your test?
 b) Place a 99% confidence interval on $\mu_1 - \mu_2$.
 
 ---
+
+**a)** The level of significance (p-value) is `r pt(ts, df)`.
+
+```{r}
+d <- (m1 - m2)
+
+tval <- qt(1 - 0.01/2, df)
+vs <- sqrt(s1^2 / n1 + s2^2 / n2)
+
+ci <- round(d + (c(-1, 1) * tval * vs), 3)
+```
+
+**b)** The 99% confidence interval for the difference is [`r ci`].
 
 <!-- done -->
 \newpage
