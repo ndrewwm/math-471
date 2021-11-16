@@ -11,7 +11,6 @@ knitr::opts_chunk$set(
 
 ```{r init, echo = FALSE}
 library(tidyverse)
-# library(distributions3)
 library(patchwork)
 library(knitr)
 
@@ -109,6 +108,7 @@ b) Place a 99% confidence interval on $\mu_1 - \mu_2$.
 
 ---
 
+<!-- done -->
 \newpage
 ### 6.8
 
@@ -201,6 +201,7 @@ t.test(subscribe, deliver, alternative = "greater", var.equal = FALSE, paired = 
 
 Our p-value is 0.004797, indicating we should reject the null hypothesis at an alpha level of 0.05 and 0.01. Our results suggest that newspaper subscribers are more informed about current events on average than non-subscribers.
 
+<!-- done -->
 \newpage
 ### 6.11
 
@@ -238,37 +239,47 @@ d611 %>%
 
 Based on these descriptive results, it appears that the level of PCB content is substantially different between the points at which the data were collected. The maximum level of PCB in 1996 is below the minimum level of PCB observed in 1982.
 
-**b)**
-
-**c)** Conditions for inference
+**b)** We will evaluate whether this procedure is valid in c), but for this case we will assume the data is paired and normally distributed, and providing a 95% confidence interval on the decrease between study points.
 
 ```{r}
-qq_r <- lst(
-  y1982 = d611 %>% filter(year == "1982") %>% pull(pcb),
-  y1996 = d611 %>% filter(year == "1996") %>% pull(pcb)
-) %>%
-  map_dbl(function(x) {
-    qq <- qqnorm(x, plot.it = FALSE)
-    cor(qq$x, qq$y)
-  }) %>%
+d <- broom::tidy(t.test(pcb ~ year, data = d611, paired = TRUE))
+
+est <- with(d, -c(estimate, conf.low, conf.high)) %>% 
+  round(2) %>%
+  unname()
+```
+
+Our estimated decrease is `r est[1]`, with a 95% confidence interval of [`r est[2]`, `r est[3]`].
+
+**c)** The assumptions for a paired t-test are:
+
+1. The sampling distribution for the *differences* is Normal/Gaussian.
+2. The differences (pairs) are independent from each other.
+
+Examining the sampling distribution via a QQ-plot, the data appear to be normally distributed.
+
+```{r}
+d611_w <- d611 %>%
+  pivot_wider(names_from = year, values_from = pcb) %>%
+  mutate(d = `1996` - `1982`)
+
+qq_r <- d611_w$d %>%
+  qqnorm(plot.it = FALSE) %>%
+  reduce(cor) %>%
   round(3)
 
-ggplot(d611, aes(sample = pcb)) +
+ggplot(d611_w, aes(sample = d)) +
   geom_qq_line(lty = "dashed") +
   geom_qq() +
-  facet_wrap(~year) +
-  theme(legend.position = "none", plot.caption = ggtext::element_markdown()) +
+  theme(plot.caption = ggtext::element_markdown()) +
   labs(
     x = "Normal Quantiles",
     y = "PCB Content",
-    caption = str_glue("1982, *r* = {qq_r[1]}; 1996, *r* = {qq_r[2]}")
+    caption = str_glue("*r* = {qq_r[1]}")
   )
-
-ggplot(d611, aes(x = pcb)) +
-  geom_histogram(color = "white") +
-  facet_wrap(~year) +
-  labs(x = "PCB Content", y = "Frequency")
 ```
+
+**d)** It is hard to say definitively from the study's brief description. The description doesn't give indication for *how* the 13 sites were chosen (e.g. if they were randomly selected from a larger pool of possible sites around the Great Lakes). It's possible there is unacknowledged spatial correlation between the sites, e.g., some sites might be closer together and might thus experience greater (or lower) exposure to PCB due to their proximity to each other.
 
 <!-- done -->
 \newpage
