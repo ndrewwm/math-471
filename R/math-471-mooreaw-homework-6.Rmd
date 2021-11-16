@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
 
 ```{r init, echo = FALSE}
 library(tidyverse)
+# library(distributions3)
 library(patchwork)
 library(knitr)
 
@@ -24,22 +25,350 @@ theme_set(
 
 ## MATH-471, Homework 6
 
+<!-- done -->
 ### 6.2
 
+For each of the situations, set up the rejection region:
+
+a) $H_0: \mu_1 = \mu_2$ versus $H_a: \mu_1 \neq \mu_2$ with $n_1 = 12, n_2 = 15$, and $\alpha = 0.05$.
+b) $H_0: \mu_1 \leq \mu_2 + 3$ versus $H_a: \mu_1 > \mu_2 + 3$ with $n_1 = n_2 = 25$, and $\alpha = 0.01$.
+c) $H_0: \mu_1 \geq \mu_2 - 9$ versus $H_a: \mu_1 < \mu_2 - 9$ with $n_1 = 13, n_2 = 15$, and $\alpha = 0.025$.
+
+---
+
+```{r q62, fig.height=6}
+q62 <- tibble(
+  a = qt(p = 1 - 0.025, df = 12 + 15 - 2),
+  b = qt(p = 1 - 0.01, df = 25 + 25 - 2),
+  c = qt(p = 0.025, df = 13 + 15 - 2)
+)
+
+p_a <- ggplot(tibble(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 12 + 15 - 2)) +
+  stat_function(fun = dt, xlim = c(-3.5, -q62$a), geom = "area", args = lst(df = 12 + 15 - 2)) +
+  stat_function(fun = dt, xlim = c(q62$a, 3.5), geom = "area", args = lst(df = 12 + 15 - 2)) +
+  labs(x = "t", y = "", title = "a. t < -2.059 or t > 2.0589") +
+  theme(axis.text.y = element_blank(), panel.grid.major.y = element_blank())
+
+p_b <- ggplot(tibble(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 25 + 25 - 2)) +
+  stat_function(fun = dt, xlim = c(q62$b, 3.5), geom = "area", args = lst(df = 25 + 25 - 2)) +
+  labs(x = "t", y = "", title = "b. t > 2.407") +
+  theme(axis.text.y = element_blank(), panel.grid.major.y = element_blank())
+
+p_c <- ggplot(tibble(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 13 + 15 - 2)) +
+  stat_function(fun = dt, xlim = c(-3.5, q62$c), geom = "area", args = lst(df = 13 + 15 - 2)) +
+  labs(x = "t", y = "", title = "c. t < -2.056") +
+  theme(axis.text.y = element_blank(), panel.grid.major.y = element_blank())
+
+p_a / p_b / p_c
+```
+
+\newpage
 ### 6.3
+
+Conduct a test of $H_0: \mu_1 \geq \mu_2 - 2.3$ versus $H_a: \mu_1 < \mu_2 - 2.3$ for the sample data summarized here. Use $\alpha = 0.01$ in reaching your conclusions.
+
+| Statistic   | Pop. 1 | Pop. 2 |
+| :---------- | :----- | :----- |
+| Sample Size | 13     | 21     |
+| Sample Mean | 50.3   | 58.6   |
+| Sample S.D. | 7.23   | 6.98   |
+
+---
+
+```{r}
+# n, mean, SD
+n1 <- 13
+n2 <- 21
+
+m1 <- 50.3
+m2 <- 58.6
+
+s1 <- 7.23
+s2 <- 6.98
+
+# alpha and constant
+a <- 0.01
+d0 <- 2.3
+
+k <- sqrt(s1) / n1 / (sqrt(s1) / n1 + sqrt(s2) / n2)
+
+ts <- (m1 - m2 - d0) / sqrt(s1 / n1 + s2 / n2)
+df <- (n1 - 1) * (n2 - 1) / ((1 - k)^2 * (n1 - 1) + k^2 * (n2 - 1))
+
+```
 
 ### 6.4
 
+Refer to Exercise 6.3.
+
+a) What is the level of significance for your test?
+b) Place a 99% confidence interval on $\mu_1 - \mu_2$.
+
+---
+
+\newpage
 ### 6.8
 
+The number of households currently receiving a daily newspaper has decreased over the last 10 years, and many people state they obtain information about current events through television news and the Internet. To test whether people who receive a daily newspaper have a greater knowledge of current events than people who don't, a sociologist gave a current events test to 25 randomly selected people who subscribe to a daily newspaper and to 30 randomly selected persons who do not receive a daily newspaper. The following stem-and-leaf graphs give the scores (maximum score is 70) for the two groups. Does it appear that people who receive a daily newspaper have a greater knowledge of current events? Be sure to evaluate all necessary conditions for your procedures to be valid.
+
+---
+
+```{r}
+# should be n = 30
+deliver <- c(
+  0, 0, 0,
+  13, 
+  15, 19,
+  23, 23, 24,
+  25, 27,
+  30, 30, 32, 33, 34,
+  35, 35, 38, 39,
+  40, 40, 41, 42, 44,
+  45,
+  50,
+  55, 55,
+  62
+)
+
+# should be n = 25
+subscribe <- c(
+  22,
+  29, 29,
+  32,
+  36, 36, 38, 38, 39,
+  40, 40, 40, 41, 41, 42, 43, 43, 43,
+  45, 45, 46, 46, 46,
+  52,
+  59
+)
+
+# stem(deliver)
+# stem(subscribe)
+```
+
+Based on the study description, it seems reasonable to treat the two samples as independent. The data is randomly sampled, so we can also assume each observation is i.i.d. from its population. Our samples are reasonably sized. We have a specific research hypothesis we are investigating, i.e, whether subscribers have a greater knowledge score on average than non-subscribers. If the data is normally distributed, we will conduct a one-sided t-test, with the following null and alternative hypotheses, where $\mu$ is the average *difference* between the groups' scores:
+
+\begin{align*}
+H_0: \mu \leq \mu_0 \\
+H_a: \mu > \mu_0
+\end{align*}
+
+First we will assess the two samples to see if they can be treated as Gaussian data.
+
+```{r}
+q68 <- lst(Deliver = deliver, Subscribe = subscribe) %>%
+  enframe() %>%
+  unnest_longer(value)
+
+qq_r <- lst(deliver, subscribe) %>%
+  map_dbl(function(x) {
+    qq <- qqnorm(x, plot.it = FALSE)
+    cor(qq$x, qq$y)
+  }) %>%
+  round(3)
+
+ggplot(q68, aes(sample = value)) +
+  geom_qq_line(lty = "dashed", color = "black") +
+  geom_qq() +
+  theme(legend.position = "none", plot.caption = ggtext::element_markdown()) +
+  facet_wrap(~name) +
+  labs(
+    x = "Normal Quantiles",
+    y = "Score",
+    caption = str_glue("Deliver, *r* = {qq_r[1]}; Subscriber, *r* = {qq_r[2]}")
+  )
+
+ggplot(q68, aes(x = value)) +
+  geom_histogram(color = "white") +
+  facet_wrap(~name) +
+  labs(x = "Score", y = "Frequency")
+```
+
+Based on the QQ-plots and histograms, it appears we can reasonably treat the data as Gaussian, while noting a few potential outliers (3 observations at 0) in the "Deliver" sample. Next we will determine whether the variances observed in each group can be considered equal, using an F-test. Our null hypothesis is that the sample variances are equal (i.e., the ratio of the two population variances = 1).
+
+```{r, echo = TRUE}
+var.test(subscribe, deliver)
+```
+
+Our p-value for this test is quite small, indicating this result is highly unlikely if the ratio of the two variances was equal to 1. We should reject the null hypothesis, and proceed with a t-test that does not assume equal variances. Now we will conduct the one-tailed t-test on the two samples.
+
+```{r, echo = TRUE}
+t.test(subscribe, deliver, alternative = "greater", var.equal = FALSE, paired = FALSE)
+```
+
+Our p-value is 0.004797, indicating we should reject the null hypothesis at an alpha level of 0.05 and 0.01. Our results suggest that newspaper subscribers are more informed about current events on average than non-subscribers.
+
+\newpage
 ### 6.11
 
+PCBs have been in use since 1929, mainly in the electrical industry, but it was not until the 1960s that they were found to be a major environmental contaminant. In the paper “The Ratio of DDE to PCB Concentrations in Great Lakes Herring Gull Eggs and Its Use in Interpreting Contaminants Data” [Journal of Great Lakes Research (1998) 24(1):12–31], researchers report on the following study. Thirteen study sites from the five Great Lakes were selected. At each site, 9 to 13 herring gull eggs were collected randomly each year for several years. Following collection, the PCB content was determined. The mean PCB content at each site is reported in the following table for the years 1982 and 1996.
+
+a) Legislation was passed in the 1970s restricting the production and use of PCBs. Thus, the active input of PCBs from current local sources has been severely curtailed. Do the data provide evidence that there has been a significant decrease in the mean PCB content of herring gull eggs?
+b) Estimate the size of the decrease in mean PCB content from 1982 to 1996, using a 95% confidence interval.
+c) Evaluate the conditions necessary to validly test the hypotheses and construct the confidence intervals using the collected data.
+d) Does the independence condition appear to be violated?
+
+---
+
+**a)** Given that we are not asked to perform a specific test for this item, we will begin by visualizing and descriptively summarizing the data.
+
+```{r}
+d611 <- tibble(
+  site  = 1:13,
+  y1982 = c(61.48, 64.47, 45.50, 59.70, 58.81, 75.86, 71.57, 38.06, 30.51, 39.70, 29.78, 66.89, 63.93),
+  y1996 = c(13.99, 18.26, 11.28, 10.02, 21.00, 17.36, 28.20, 7.30, 12.80, 9.41, 12.63, 16.83, 22.74)
+)
+
+d611 <- d611 %>%
+  pivot_longer(cols = -site, names_to = "year", values_to = "pcb") %>%
+  mutate(year = year %>% str_remove("y") %>% factor())
+  
+ggplot(d611, aes(x = year, y = pcb)) +
+  geom_boxplot() +
+  labs(x = "", y = "PCB Content")
+
+d611 %>%
+  group_by(year) %>%
+  summarise(n = n(), m = mean(pcb), s = sd(pcb), min = min(pcb), max = max(pcb)) %>%
+  kable(digits = 2, col.names = c("Year", "N", "Mean", "SD", "Min", "Max"))
+```
+
+Based on these descriptive results, it appears that the level of PCB content is substantially different between the points at which the data were collected. The maximum level of PCB in 1996 is below the minimum level of PCB observed in 1982.
+
+**b)**
+
+**c)** Conditions for inference
+
+```{r}
+qq_r <- lst(
+  y1982 = d611 %>% filter(year == "1982") %>% pull(pcb),
+  y1996 = d611 %>% filter(year == "1996") %>% pull(pcb)
+) %>%
+  map_dbl(function(x) {
+    qq <- qqnorm(x, plot.it = FALSE)
+    cor(qq$x, qq$y)
+  }) %>%
+  round(3)
+
+ggplot(d611, aes(sample = pcb)) +
+  geom_qq_line(lty = "dashed") +
+  geom_qq() +
+  facet_wrap(~year) +
+  theme(legend.position = "none", plot.caption = ggtext::element_markdown()) +
+  labs(
+    x = "Normal Quantiles",
+    y = "PCB Content",
+    caption = str_glue("1982, *r* = {qq_r[1]}; 1996, *r* = {qq_r[2]}")
+  )
+
+ggplot(d611, aes(x = pcb)) +
+  geom_histogram(color = "white") +
+  facet_wrap(~year) +
+  labs(x = "PCB Content", y = "Frequency")
+```
+
+<!-- done -->
+\newpage
 ### 6.22
 
+Provide the rejection region for the paired t test for each of the following sets of hypotheses:
+
+a) $H_0: \mu_d = 0$ versus $H_a: \mu_d \neq 0$ with $n = 19$, and $\alpha = 0.05$
+b) $H_0: \mu_d \leq 0$ versus $H_a: \mu_d > 0$ with $n = 8$, and $\alpha = 0.025$
+c) $H_0: \mu_d \geq 0$ versus $H_a: \mu_d < 0$ with $n = 14$, and $\alpha = 0.01$
+
+---
+
+```{r q622, fig.height=6}
+q622 <- tibble(
+  a = qt(p = 1 - 0.025, df = 19 - 1),
+  b = qt(p = 1 - 0.01, df = 8 - 1),
+  c = qt(p = 0.025, df = 14 - 1)
+)
+
+p_a <- ggplot(tibble(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 18)) +
+  stat_function(fun = dt, xlim = c(-3.5, -q62$a), geom = "area", args = lst(df = 18)) +
+  stat_function(fun = dt, xlim = c(q622$a, 3.5), geom = "area", args = lst(df = 18)) +
+  labs(x = "t", y = "", title = "a. t < -2.10 or t > 2.10") +
+  theme(axis.text.y = element_blank(), panel.grid.major.y = element_blank())
+
+p_b <- ggplot(tibble(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 7)) +
+  stat_function(fun = dt, xlim = c(q622$b, 3.5), geom = "area", args = lst(df = 7)) +
+  labs(x = "t", y = "", title = "b. t > 3") +
+  theme(axis.text.y = element_blank(), panel.grid.major.y = element_blank())
+
+p_c <- ggplot(tibble(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dt, args = lst(df = 13)) +
+  stat_function(fun = dt, xlim = c(-3.5, q622$c), geom = "area", args = lst(df = 13)) +
+  labs(x = "t", y = "", title = "c. t < -2.16") +
+  theme(axis.text.y = element_blank(), panel.grid.major.y = element_blank())
+
+p_a / p_b / p_c
+```
+
+<!-- done -->
+\newpage
 ### 6.23
 
+A random sample of eight pairs of twins was randomly assigned to treatment A or treatment B. The data are given in the following table.
+
+```{r q623}
+d623 <- tibble(
+  twins = 1:8,
+  A = c(48.3, 44.6, 49.7, 40.5, 54.3, 55.6, 45.8, 35.4),
+  B = c(43.5, 43.8, 53.7, 43.9, 54.4, 54.7, 45.2, 34.4)
+)
+
+print(as.data.frame(d623))
+```
+
+a) Is there significant evidence that the two treatments differ using an $\alpha$ = 0.05 paired t test.
+b) Is there significant evidence that the two treatments differ using an $\alpha$ = 0.05 sign test.
+c) Do your conclusions in parts (a) and (b) agree?
+d) How do your inferences about the two treatments based on the paired t test and based on the sign test differ?
+
+---
+
+**a)** We are told to conduct a t-test, despite the data exhibiting non-normality (via inspection of QQ-plots). The sample variances do not appear equal, and we are not told to assume this is the case. Conducting a paired t-test on the sample data, we observe the following:
+
+```{r, echo = TRUE}
+with(d623, t.test(A, B, paired = TRUE, var.equal = FALSE, alternative = "two.sided"))
+```
+
+At an alpha level of 0.05, we would fail to reject the null hypothesis.
+
+**b)** First, we classify each pair of twins based on whether treatment A is larger than treatment B. Then, we perform a sign test, with $H_0: \eta_0 = \eta$ and $H_a: \eta_0 \neq \eta$.
+
+```{r}
+with(d623, table((A - B) > 0))
+
+binom.test(x = 3, n = 8, p = 0.5, alternative = "two.sided")
+```
+
+At an alpha level of 0.05, we would fail to reject the null hypothesis.
+
+**c)** Yes, in this instance, the two tests suggest the same conclusion, i.e. that the treatments are similar in their effectiveness.
+
+**d)** With a t-test, our procedure is examining the *difference* between the observed treatment means. Under the null hypothesis, the difference itself can be modeled using the normal distribution. Our inference is thus based on whether the observed difference is extreme, given what is expected under the null hypothesis.
+
+Conversely, the sign test treats differences in a specific direction as positive/negative *events*, and models these events as a set of binomial trials equal to the total # of observations. If more events are positive (or negative) than would be expected by chance, the analyst should conclude that there is a difference between the groups.
+
+<!-- done -->
 ### 6.24
 
-***a.***
+Refer to Exercise 6.23.
 
-***c.***
+a) What is the level of significance of the paired t test?
+
+c) Place a 95% confidence interval on the mean difference between the responses from the two treatments.
+
+---
+
+**a)** The significance level (p-value) is 0.9409.
+
+**c)** The 95% confidence interval for the mean difference is [-2.234, 2.384].
